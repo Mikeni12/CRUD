@@ -18,18 +18,15 @@ public class ProfesorDAO {
     private Connection con=null;
 
     private Connection obtenerConexion(){
-        
         Connection myConn = null;
-	try{
-			
-            myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lmfa autoReconnect=true&useSSL=false", "root" , "conrasena");
-
+	try{		
+            myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Ej1","root","root");
+            if (myConn != null)
+                System.out.println("Conexión chida");
 	}
 	catch (Exception exc) {
-			
             exc.printStackTrace();
-	}	
-			
+	}				
         return myConn;
         //terminar
     }
@@ -66,8 +63,9 @@ public class ProfesorDAO {
                 return (Profesor) resultado;
             else
                 return null;
-        } finally{
-            
+        } catch (SQLException e) {
+            System.out.println("Error de conexion: "+e);
+            return null;
         }
     }
 
@@ -75,4 +73,11 @@ public class ProfesorDAO {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
+    public static void main(String[] args) throws SQLException {
+        ProfesorDAO prof = new ProfesorDAO();
+        Profesor mel=new Profesor();
+        mel.setIdProfesor(1);
+        prof.obtenerConexion();
+        System.out.println(""+prof.read(mel));
+    }
 }
