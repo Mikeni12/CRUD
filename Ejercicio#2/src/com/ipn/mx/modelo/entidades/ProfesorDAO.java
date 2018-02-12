@@ -1,5 +1,6 @@
 package com.ipn.mx.modelo.entidades;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,7 +17,20 @@ public class ProfesorDAO {
     private static final String SQL_SELECT_ALL="select * from Profesor";
     private Connection con=null;
 
-    private void obtenerConexion(){
+    private Connection obtenerConexion(){
+        
+        Connection myConn = null;
+	try{
+			
+            myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lmfa autoReconnect=true&useSSL=false", "root" , "conrasena");
+
+	}
+	catch (Exception exc) {
+			
+            exc.printStackTrace();
+	}	
+			
+        return myConn;
         //terminar
     }
     
