@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.JOptionPane;
 /**
@@ -74,27 +76,30 @@ public class ProfesorDAO {
         }
     }
     
+    public void read(){
+
+        ArrayList<Profesor> profesores = new ArrayList<Profesor>();
+        
+        profesores = obtenerResultado();
+        for(Profesor unProfe  : profesores){
+            
+            System.out.println(unProfe);
+            
+        }        
+    }
+    
     public void read(Profesor p) throws SQLException{
         
-        Connection conn; 
-        PreparedStatement ps=null;
         
-        ResultSet rs=null;
+        ArrayList<Profesor> profesores = new ArrayList<Profesor>();
+        
         try{
             
-            conn  = obtenerConexion();
+            profesores = obtenerResultado(p.getIdProfesor());
             
-
-            ps=conn.prepareStatement(SQL_SELECT);
-            ps.setInt(1, p.getIdProfesor());
-            rs=ps.executeQuery();
-            
-            while(rs.next()){
+            for(Profesor unProfe  : profesores){
                 
-                p.setNombreProfesor(rs.getString("nombreProfesor"));
-                p.setPaternoProfesor(rs.getString("paternoProfesor"));
-                p.setMaternoProfesor(rs.getString("maternoProfesor"));
-                p.setEmail(rs.getString("emailProfesor"));
+                    System.out.println(unProfe);
                 
                 
             }
@@ -106,8 +111,85 @@ public class ProfesorDAO {
         }
     }
 
-    private List obtenerResultado(ResultSet rs) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private ArrayList<Profesor> obtenerResultado(){
+        
+        Connection conn; 
+        PreparedStatement ps=null;
+        ResultSet rs=null;
+        Profesor p = new Profesor();
+        
+        ArrayList<Profesor> resultados = new ArrayList<Profesor> ();
+        
+        try{
+            
+            conn  = obtenerConexion();
+            ps=conn.prepareStatement(SQL_SELECT_ALL);
+            
+            rs=ps.executeQuery();
+            
+            while(rs.next()){
+                
+                p.setIdProfesor(rs.getInt("idProfesor"));
+                p.setNombreProfesor(rs.getString("nombreProfesor"));
+                p.setPaternoProfesor(rs.getString("paternoProfesor"));
+                p.setMaternoProfesor(rs.getString("maternoProfesor"));
+                p.setEmail(rs.getString("emailProfesor"));
+                
+                resultados.add(p);
+            
+            }
+            
+            
+            return resultados;
+            
+        } catch(SQLException e ){
+            
+            System.out.println("Error de conexion: "+e);
+            return null;
+        }
+        
+        
+        
+    }
+    private ArrayList<Profesor> obtenerResultado(int id) throws SQLException {
+        
+        Connection conn; 
+        PreparedStatement ps=null;
+        ResultSet rs=null;
+        Profesor p = new Profesor();
+        
+        ArrayList<Profesor> resultados = new ArrayList<Profesor> ();
+        
+        try{
+            
+            conn  = obtenerConexion();
+            ps=conn.prepareStatement(SQL_SELECT);
+            ps.setInt(1, id);
+            rs=ps.executeQuery();
+            
+            while(rs.next()){
+                
+                p.setIdProfesor(rs.getInt("idProfesor"));
+                p.setNombreProfesor(rs.getString("nombreProfesor"));
+                p.setPaternoProfesor(rs.getString("paternoProfesor"));
+                p.setMaternoProfesor(rs.getString("maternoProfesor"));
+                p.setEmail(rs.getString("emailProfesor"));
+                
+                resultados.add(p);
+            
+            }
+            
+            
+            return resultados;
+            
+        } catch(SQLException e ){
+            
+            System.out.println("Error de conexion: "+e);
+            return null;
+        }
+        
+
+        
     }
 
     private void cerrarConexion(Object object, Statement aStmnt, Connection conn) {
@@ -120,6 +202,8 @@ public class ProfesorDAO {
         mel.setIdProfesor(1);
         prof.read(mel);
         
-        System.out.println(mel);
+        prof.read();
+        
+        
     }
 }
