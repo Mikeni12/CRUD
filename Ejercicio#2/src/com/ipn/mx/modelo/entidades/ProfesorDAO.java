@@ -4,7 +4,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
+import javax.swing.JOptionPane;
 /**
  *
  * @author mikeni
@@ -35,6 +37,28 @@ public class ProfesorDAO {
     }
     
     public void create(Profesor p) throws SQLException{
+        
+        PreparedStatement crearProfesor = null;
+		
+		try {
+                        
+                        con.setAutoCommit(false);
+                        
+                        crearProfesor = con.prepareStatement(SQL_INSERT);
+                        
+			Connection conn = obtenerConexion();
+			Statement aStmnt = conn.createStatement();
+                        aStmnt.
+                        
+			aStmnt.executeUpdate(SQL_INSERT);
+			JOptionPane.showMessageDialog(null, "REGISTRO AGREGADO");
+			cerrarConexion(null,aStmnt, conn);
+			
+			
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+			
+		}
         
     }
     
@@ -72,6 +96,10 @@ public class ProfesorDAO {
     }
 
     private List obtenerResultado(ResultSet rs) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void cerrarConexion(Object object, Statement aStmnt, Connection conn) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
