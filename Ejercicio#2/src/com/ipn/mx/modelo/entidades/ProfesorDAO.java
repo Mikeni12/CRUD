@@ -22,7 +22,7 @@ public class ProfesorDAO {
     private Connection obtenerConexion(){
         Connection myConn = null;
 	try{		
-            myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Ej1","root","root");
+            myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Ej1","root","manolito130");
             if (myConn != null)
                 System.out.println("Conexión chida");
 	}
@@ -45,9 +45,9 @@ public class ProfesorDAO {
                         
 			Connection conn = obtenerConexion();
 			Statement aStmnt = conn.createStatement();
-                        aStmnt.
+                       // aStmnt.
                         
-			aStmnt.executeUpdate(SQL_INSERT);
+			//aStmnt.executeUpdate(SQL_INSERT);
 			JOptionPane.showMessageDialog(null, "REGISTRO AGREGADO");
 			cerrarConexion(null,aStmnt, conn);
 			
@@ -74,22 +74,35 @@ public class ProfesorDAO {
         }
     }
     
-    public Profesor read(Profesor p) throws SQLException{
+    public void read(Profesor p) throws SQLException{
+        
+        Connection conn; 
         PreparedStatement ps=null;
-        obtenerConexion();
+        
         ResultSet rs=null;
         try{
-            ps=con.prepareStatement(SQL_SELECT);
+            
+            conn  = obtenerConexion();
+            
+
+            ps=conn.prepareStatement(SQL_SELECT);
             ps.setInt(1, p.getIdProfesor());
             rs=ps.executeQuery();
-            List resultado=obtenerResultado(rs);
-            if(resultado.size()>0)
-                return (Profesor) resultado;
-            else
-                return null;
+            
+            while(rs.next()){
+                
+                p.setNombreProfesor(rs.getString("nombreProfesor"));
+                p.setPaternoProfesor(rs.getString("paternoProfesor"));
+                p.setMaternoProfesor(rs.getString("maternoProfesor"));
+                p.setEmail(rs.getString("emailProfesor"));
+                
+                
+            }
+
+                
         } catch (SQLException e) {
             System.out.println("Error de conexion: "+e);
-            return null;
+           
         }
     }
 
@@ -105,7 +118,8 @@ public class ProfesorDAO {
         ProfesorDAO prof = new ProfesorDAO();
         Profesor mel=new Profesor();
         mel.setIdProfesor(1);
-        prof.obtenerConexion();
-        System.out.println(""+prof.read(mel));
+        prof.read(mel);
+        
+        System.out.println(mel);
     }
 }
