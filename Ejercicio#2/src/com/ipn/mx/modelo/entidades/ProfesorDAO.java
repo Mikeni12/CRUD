@@ -38,20 +38,26 @@ public class ProfesorDAO {
     public void create(Profesor p) throws SQLException{
         
         PreparedStatement crearProfesor = null;
+        Connection conn;
 		
 		try {
+                        conn = obtenerConexion();
                         
-                        con.setAutoCommit(false);
                         
-                        crearProfesor = con.prepareStatement(SQL_INSERT);
                         
-			Connection conn = obtenerConexion();
-			Statement aStmnt = conn.createStatement();
-                       // aStmnt.
+                        crearProfesor = conn.prepareStatement(SQL_INSERT);
+                        crearProfesor.setString(1, p.getNombreProfesor());
+                        crearProfesor.setString(2, p.getPaternoProfesor());
+                        crearProfesor.setString(3, p.getMaternoProfesor());
+                        crearProfesor.setString(4, p.getEmail());
+			
                         
-			//aStmnt.executeUpdate(SQL_INSERT);
-			JOptionPane.showMessageDialog(null, "REGISTRO AGREGADO");
-			cerrarConexion(null,aStmnt, conn);
+                        
+                        crearProfesor.executeUpdate();
+			
+                        System.out.println("REGISTRO EXITOAMENTE AGREGADO");
+                            
+			
 			
 			
 		} catch (SQLException sqle) {
@@ -63,15 +69,50 @@ public class ProfesorDAO {
     
     public void update(Profesor p) throws SQLException{
         
+        Connection conn;
+        PreparedStatement ps=null;
+        
+        try{
+            
+            conn = obtenerConexion();
+            ps=conn.prepareStatement(SQL_UPDATE);
+            ps.setString(1, p.getNombreProfesor());
+            ps.setString(2, p.getPaternoProfesor());
+            ps.setString(3, p.getMaternoProfesor());
+            ps.setString(4, p.getEmail());
+            ps.setInt(5, p.getIdProfesor());
+            ps.executeUpdate();
+            
+            System.out.println("REGISTRO EXITOSAMENTE ACTUALIZADO");
+            
+        } catch(SQLException e ){
+            
+            System.out.println("Error de conexion: "+e);
+            
+        }
+        
     }
     
     public void delete(Profesor p) throws SQLException{
+        
+        Connection conn;
         PreparedStatement ps=null;
-        obtenerConexion();
+        
         try{
-            ps=con.prepareStatement(SQL_DELETE);
+            
+            conn = obtenerConexion();
+            ps=conn.prepareStatement(SQL_DELETE);
+            ps.setInt(1, p.getIdProfesor());
             ps.executeUpdate();
-        } finally{
+            
+            System.out.println("REGISTRO EXITOSAMENTE ELIMINADO");
+            
+        } catch(SQLException e ){
+            
+            System.out.println("Error de conexion: "+e);
+            
+        }
+        finally{
             
         }
     }
@@ -129,13 +170,16 @@ public class ProfesorDAO {
             
             while(rs.next()){
                 
+                p = new Profesor();
+                
                 p.setIdProfesor(rs.getInt("idProfesor"));
                 p.setNombreProfesor(rs.getString("nombreProfesor"));
                 p.setPaternoProfesor(rs.getString("paternoProfesor"));
                 p.setMaternoProfesor(rs.getString("maternoProfesor"));
                 p.setEmail(rs.getString("emailProfesor"));
-                
+
                 resultados.add(p);
+                
             
             }
             
@@ -200,10 +244,24 @@ public class ProfesorDAO {
         ProfesorDAO prof = new ProfesorDAO();
         Profesor mel=new Profesor();
         mel.setIdProfesor(1);
+        
+        System.out.println("LEYENDO CON ID\n");
+        prof.read(mel);
+        System.out.println("LEYENDO SIN ID\n");
+        prof.read();
+        mel.setEmail("jajaja");
+        mel.setNombreProfesor("huron");
+        mel.setPaternoProfesor("SANCHEZ");
+        mel.setMaternoProfesor("DURON");
+        
+        
+        prof.update(mel);
         prof.read(mel);
         
+        prof.create(mel);
         prof.read();
         
+        //prof.delete(mel);
         
     }
 }
