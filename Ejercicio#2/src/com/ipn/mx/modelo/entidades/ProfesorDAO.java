@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 import javax.swing.JOptionPane;
 /**
  *
@@ -19,14 +20,22 @@ public class ProfesorDAO {
     private static final String SQL_DELETE="delete from Profesor where idProfesor=?";
     private static final String SQL_SELECT="select * from Profesor where idProfesor=?";
     private static final String SQL_SELECT_ALL="select * from Profesor";
-    private Connection con=null;
+    private Connection con;
+    private Scanner entrada;
+    
+    
+    public ProfesorDAO(){
+        
+        entrada = new Scanner(System.in);
+        con = null;
+    }
 
     private Connection obtenerConexion(){
         Connection myConn = null;
 	try{		
             myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Ej1","root","manolito130");
             if (myConn != null)
-                System.out.println("Conexión chida");
+                System.out.println("Conexión establecida\n");
 	}
 	catch (Exception exc) {
             exc.printStackTrace();
@@ -136,14 +145,20 @@ public class ProfesorDAO {
         
         try{
             
-            profesores = obtenerResultado(p.getIdProfesor());
             
-            for(Profesor unProfe  : profesores){
+            profesores = obtenerResultado(p.getIdProfesor());
+            if(profesores!=null){
+            
+                for(Profesor unProfe  : profesores){
                 
-                    System.out.println(unProfe);
+                System.out.println(unProfe);
                 
                 
-            }
+                }
+            }else
+                System.out.println("EL PROFESOR CON ID "+p.getIdProfesor()+" NO HA SIDO REGISTRADO");
+            
+
 
                 
         } catch (SQLException e) {
@@ -240,28 +255,133 @@ public class ProfesorDAO {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-    public static void main(String[] args) throws SQLException {
-        ProfesorDAO prof = new ProfesorDAO();
-        Profesor mel=new Profesor();
-        mel.setIdProfesor(1);
+
+    
+    
+    public int menu() throws SQLException{
         
-        System.out.println("LEYENDO CON ID\n");
-        prof.read(mel);
-        System.out.println("LEYENDO SIN ID\n");
-        prof.read();
-        mel.setEmail("jajaja");
-        mel.setNombreProfesor("huron");
-        mel.setPaternoProfesor("SANCHEZ");
-        mel.setMaternoProfesor("DURON");
+        String datoProfesor = null;
+        Profesor unProfesor;
+        int opcion = 0; 
+        System.out.println("BIENVENIDO AL CRUD DE PROFESORES POR FAVOR INDIQUE "
+                + "ALGUNA DE LAS SIGUIENTES OPCIONES \n"
+                + "1.- CREAR PROFESOR\n"
+                + "2.- BUSCAR PROFESOR POR ID\n"
+                + "3.- ENLISTAR A LOS PROFESORES REGISTRADOS\n"
+                + "4.- ACTUALIZAR PROFESOR\n"
+                + "5.- ELIMINAR PROFESOR\n");
+        opcion = entrada.nextInt();
         
+        switch(opcion){
+            
+           case 1: {
+               
+               unProfesor = new Profesor();
+               
+               System.out.println("INGRESE EL NOMBRE DEL PROFESOR\n");
+               entrada.nextLine();
+                       
+               datoProfesor = entrada.nextLine();
+               unProfesor.setNombreProfesor(datoProfesor);
+               
+               System.out.println("INGRESE EL APELLIDO PATERNO DEL PROFESOR\n");
+               datoProfesor = entrada.nextLine();
+               unProfesor.setPaternoProfesor(datoProfesor);
+               
+               System.out.println("INGRESE EL APELLIDO MATERNO DEL PROFESOR\n");
+               datoProfesor = entrada.nextLine();
+               unProfesor.setMaternoProfesor(datoProfesor);
+               
+               System.out.println("INGRESE EL E-MAIL DEL PROFESOR\n");
+               datoProfesor = entrada.nextLine();
+               unProfesor.setEmail(datoProfesor);
+               
+               create(unProfesor);
+               break;
+               
+           }
+           case 2:{
+               
+               unProfesor = new Profesor();
+               
+               System.out.println("INGRESE EL ID DEL PROFESOR\n");
+               entrada.nextLine();
+               unProfesor.setIdProfesor(entrada.nextInt());
+               System.out.println("RESULTADOS\n");
+               read(unProfesor);
+               break;
+
+           }
+           
+           case 3:{
+               
+               System.out.println("RESULTADOS\n");
+               read();
+               break;
+           }
+            
+           case 4:{
+               
+                              
+               unProfesor = new Profesor();
+
+
+               System.out.println("INGRESE EL ID DEL PROFESOR\n");
+               entrada.nextLine();
+               unProfesor.setIdProfesor(entrada.nextInt());
+               
+               read(unProfesor);
+               
+               System.out.println("INGRESE EL NOMBRE DEL PROFESOR\n");
+               entrada.nextLine();
+               datoProfesor = entrada.nextLine();
+               unProfesor.setNombreProfesor(datoProfesor);
+               
+               System.out.println("INGRESE EL APELLIDO PATERNO DEL PROFESOR\n");
+               datoProfesor = entrada.nextLine();
+               unProfesor.setPaternoProfesor(datoProfesor);
+               
+               System.out.println("INGRESE EL APELLIDO MATERNO DEL PROFESOR\n");
+               datoProfesor = entrada.nextLine();
+               unProfesor.setMaternoProfesor(datoProfesor);
+               
+               System.out.println("INGRESE EL E-MAIL DEL PROFESOR\n");
+               datoProfesor = entrada.nextLine();
+               unProfesor.setEmail(datoProfesor);
+               
+               
+               
+               update(unProfesor);
+               break;
+               
+               
+           }
+           
+           case 5:{
+               
+               unProfesor = new Profesor();
+               
+               System.out.println("INGRESE EL ID DEL PROFESOR");
+               unProfesor.setIdProfesor(entrada.nextInt());
+               delete(unProfesor);
+               break;
+               
+           }
+           
+           default:{
+               
+               System.out.println("INGRESE UNA OPCION VALIDA");
+           }
+           
         
-        prof.update(mel);
-        prof.read(mel);
+        }
         
-        prof.create(mel);
-        prof.read();
+        System.out.println("DESEA REALIZAR OTRA OPERACION?\n"
+                + "1.- SI\n"
+                + "2.- NO\n");
         
-        //prof.delete(mel);
+        opcion = entrada.nextInt();
         
+        return opcion;
     }
 }
